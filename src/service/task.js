@@ -15,9 +15,20 @@ let getTaskDetail = (id) => {
 let closeTask = (id) => {
     return Http.post('task/closeTask', {id})
 }
+
+let addComment = ({taskId, type, content}) => {
+    return Http.post('task/addComment', {taskId, type, content});
+}
+
+let getComments = ({taskId}) => {
+    return Http.get('task/getComments', {taskId});
+}
+
 export {
     newTask,
     getTasks,
     getTaskDetail,
-    closeTask
+    closeTask,
+    addComment,
+    getComments
 }
