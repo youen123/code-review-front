@@ -1,0 +1,43 @@
+{
+	"taskgetTasks": {
+		"flag": true,
+		"data": [
+			{
+				"type": "feature",
+				"title": "更新loader",
+				"id": 0,
+				"time": "2018-05-26",
+				"creator": "daxun",
+				"commentsNumber": 12,
+				"repo": "repo1",
+				"sourceBranch": "sourceBranch",
+				"destBranch": "destBranch",
+				"status": 0,
+				"commit": "9df78hf",
+				"reviewers": [
+					"gaga",
+					"pony"
+				]
+			},
+			{
+				"type": "feature",
+				"title": "修复bug1",
+				"id": 1,
+				"createTime": "2018-05-26",
+				"creator": "daxun",
+				"commentsNumber": 12,
+				"repo": "repo1",
+				"status": 0,
+				"sourceBranch": "sourceBranch",
+				"destBranch": "destBranch",
+				"reviewers": [
+					"gaga",
+					"pony"
+				]
+			}
+		]
+	},
+	"tasknewTask": {
+		"flag": true
+	}
+}
