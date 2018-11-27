@@ -61,7 +61,7 @@
       <div v-for="comment in comments" :key="comment.index">
         <b class="comment-creator">{{comment.creator}}</b>
         评论于
-        <span class="comment-date">{{Date(comment.create_time)}}：</span>
+        <span class="comment-date">{{comment.create_time}}：</span>
         <p class="comment-datail">{{comment.content}}</p>
       </div>
     </div>
@@ -84,6 +84,7 @@
 <script>
 import * as TaskService from "../service/task.js";
 import * as DiffService from "../service/diff.js";
+import {format} from "../util/date.js";
 export default {
   name: "taskDetail",
   data() {
@@ -129,6 +130,7 @@ export default {
       if (data.commits.length) {
         self.endCommit = data.commits[0].sha;
         self.baseCommit = data.commits[data.commits.length - 1].sha;
+        this.compare();
       }
     });
     this.getComments();
@@ -150,7 +152,11 @@ export default {
     },
     getComments() {
       TaskService.getComments({taskId: this.taskId}).then((data) => {
-        this.comments = data
+        this.comments = data.map((item) => {
+          const date = new Date(item.create_time)
+          item.create_time = format(date, "yyyy-MM-dd hh:mm:ss")
+          return item
+        })
       }).catch((e) => {
         alert(e && e.errmsg || '失败');
       });
@@ -195,7 +201,7 @@ export default {
   margin: 10px 0;
 }
 .comment-date {
-  font: 12px;
+  font-size: 14px;
 }
 .comment-datail {
   background: lightgray;
