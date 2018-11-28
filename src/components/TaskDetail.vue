@@ -52,10 +52,13 @@
         </el-collapse-item>-->
       </el-collapse>
     </el-card>
-    <el-card class="box-card" v-for="(file, index) in fileList" :key="file.name">
+    <!-- <el-card class="box-card" v-for="(file, index) in fileList" :key="file.name">
       <div slot="header" class="clearfix">
         <div :id="'file' + index"></div>
       </div>
+    </el-card> -->
+    <el-card class="box-card" v-for="(code, index) in codeList" :key="index">
+      <Code :code="code" :commit1="baseCommit" :commit2="endCommit"/>
     </el-card>
     <div class="comments-list">
       <div v-for="comment in comments" :key="comment.index">
@@ -65,15 +68,7 @@
         <p class="comment-datail">{{comment.content}}</p>
       </div>
     </div>
-    <div>
-      <el-input
-        type="textarea"
-        :autosize="{ minRows: 4, maxRows: 10}"
-        placeholder="请输入内容"
-        v-model="textarea1"
-      ></el-input>
-      <el-button type="success" @click="addComment">评论</el-button>
-    </div>
+    <Comment v-on:submitComment="addComment"/>
     <div class="dash-board">
       <el-button @click="closeTask" type="primary">merge</el-button>
       <el-button @click="closeTask" type="danger">reject</el-button>
@@ -85,6 +80,8 @@
 import * as TaskService from "../service/task.js";
 import * as DiffService from "../service/diff.js";
 import {format} from "../util/date.js";
+import Comment from './Comment';
+import Code from './Code'
 export default {
   name: "taskDetail",
   data() {
@@ -117,9 +114,11 @@ export default {
         }
       ],
       fileList: [],
-      comments: []
+      comments: [],
+      codeList: [],
     };
   },
+  components: { Comment, Code },
   mounted() {
     let id = this.$route.query.id;
     this.taskId = id;
@@ -142,8 +141,8 @@ export default {
         this.task.status = 1;
       });
     },
-    addComment() {
-      TaskService.addComment({taskId: this.taskId, type: 1, content: this.textarea1}).then(data => {
+    addComment(content) {
+      TaskService.addComment({taskId: this.taskId, type: 1, content}).then(data => {
         this.getComments();
         this.textarea1 = '';
       }).catch((e) => {
@@ -163,6 +162,7 @@ export default {
     },
     compare() {
       const self = this;
+      this.codeList = [];
       DiffService.getFileList({
         repo: this.task.repo,
         branch: this.task.sourceBranch,
@@ -171,13 +171,15 @@ export default {
       }).then(data => {
         self.fileList = data;
         self.fileList.forEach((item, index) => {
-          self.getDiffHTML(
-            self.task.repo,
-            self.baseCommit,
-            self.endCommit,
-            item.name,
-            index
-          );
+          if (item.change) {
+            self.getDiffJson(
+              self.task.repo,
+              self.baseCommit,
+              self.endCommit,
+              item.name,
+              index
+            );
+          }
         });
       });
     },
@@ -185,7 +187,12 @@ export default {
       DiffService.getDiffHTML({ repo, commit1, commit2, file }).then(data => {
         document.querySelector("#file" + index).innerHTML = data;
       });
-    }
+    },
+    getDiffJson(repo, commit1, commit2, file, index) {
+      DiffService.getDiffJson({ repo, commit1, commit2, file }).then(data => {
+        this.codeList.push(data[0]);
+      });
+    },
   }
 };
 </script>
@@ -205,5 +212,12 @@ export default {
 }
 .comment-datail {
   background: lightgray;
+}
+.d2h-code-linenumber:hover {
+  background: lightseagreen;
+}
+.inline-comment {
+  background: red;
+  height: 10px;
 }
 </style>

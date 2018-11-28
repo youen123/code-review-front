@@ -16,8 +16,8 @@ let closeTask = (id) => {
     return Http.post('task/closeTask', {id})
 }
 
-let addComment = ({taskId, type, content}) => {
-    return Http.post('task/addComment', {taskId, type, content});
+let addComment = ({taskId, type, content, file, commit1, commit2, block_index, line_index}) => {
+    return Http.post('task/addComment', {taskId, type, content, file, commit1, commit2, block_index, line_index});
 }
 
 let getComments = ({taskId}) => {
