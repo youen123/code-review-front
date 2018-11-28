@@ -8,7 +8,12 @@ let getDiffHTML = ({repo, commit1, commit2, file}) => {
     return Http.get('diff/getDiffFileHTML', { repo, commit1, commit2, file });
 }
 
+let getDiffJson = ({repo, commit1, commit2, file}) => {
+    return Http.get('diff/getDiffFileJson', { repo, commit1, commit2, file });
+}
+
 export {
     getFileList,
-    getDiffHTML
+    getDiffHTML,
+    getDiffJson,
 }
