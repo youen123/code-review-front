@@ -20,8 +20,8 @@ let addComment = ({taskId, type, content, file, commit1, commit2, block_index, l
     return Http.post('task/addComment', {taskId, type, content, file, commit1, commit2, block_index, line_index});
 }
 
-let getComments = ({taskId}) => {
-    return Http.get('task/getComments', {taskId});
+let getComments = ({taskId, type, file, commit1, commit2}) => {
+    return Http.get('task/getComments', {taskId, type, file, commit1, commit2});
 }
 
 export {

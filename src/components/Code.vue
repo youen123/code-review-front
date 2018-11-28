@@ -68,6 +68,15 @@
                           </div>
                         </td>
                       </tr>
+                      <tr v-if="comments[index1+'-'+index2]">
+                        <td colspan="2">
+                          <div class="comment" v-for="comment in comments[index1+'-'+index2]">
+                            <b>{{comment.creator}}:</b>
+                            {{comment.create_time}} 
+                            <p class="comment-content">{{comment.content}}</p>
+                          </div>
+                        </td>
+                      </tr>
                       <tr v-if="isShow(index1, index2)">
                         <td colspan="2">
                           <Comment
@@ -92,18 +101,23 @@
 <script>
 import Comment from "./Comment";
 import * as TaskService from "../service/task.js";
+import {format} from "../util/date.js";
 
 export default {
   name: "Code",
   data() {
     return {
       file: this.code,
-      commentForm: []
+      commentForm: [],
+      commentsList: [],
+      comments: {},
     };
   },
   props: ["code", "commit1", "commit2"],
   components: { Comment },
-
+  mounted() {
+    this.getComments();
+  },
   methods: {
     addComment(content, position) {
       TaskService.addComment({ 
@@ -122,8 +136,38 @@ export default {
         alert((e && e.errmsg) || "失败");
       });
     },
+    hasComments(index1, index2) {
+      console.log(!!this.comments[index1 + '-' + index2]);
+      return !!this.comments[index1 + '-' + index2];
+    },
     getComments() {
-      console.log('haah');
+      TaskService.getComments({ 
+        taskId: this.$route.query.id, 
+        type: 0, 
+        commit1: this.commit1,
+        commit2: this.commit2,
+        file: this.file.newName,
+      }).then(data => {
+        this.comments = {};
+        data.forEach((item) => {
+          let pos = item.block_index + '-' + item.line_index;
+          if (this.comments[pos]) {
+            const date = new Date(item.create_time)
+            item.create_time = format(date, "yyyy-MM-dd hh:mm:ss")
+            this.$set(this.comments, pos, [...this.comments[pos], item]);
+            // this.comments[pos].push(item);
+          } else {
+            const date = new Date(item.create_time)
+            item.create_time = format(date, "yyyy-MM-dd hh:mm:ss")
+            this.$set(this.comments, pos, [item]);
+            // this.comments[pos] = [item]; 
+          }
+        })
+        this.commentsList = data;
+      })
+      .catch(e => {
+        alert((e && e.errmsg) || "失败");
+      });
     },
     showComment(index1, index2) {
       this.commentForm.push(index1 + "-" + index2);
@@ -139,4 +183,9 @@ export default {
 };
 </script>
 <style>
+.comment {
+  padding: 10px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
 </style>
