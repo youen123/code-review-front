@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2 class="pull-left">Review Board</h2>
+    <h2 class="pull-left">Code Review</h2>
     <Login class="pull-right"/>
   </header>
 </template>
